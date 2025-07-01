@@ -1,0 +1,69 @@
+{
+  "product_queries": [
+    {
+      "query": "Tell me about Feelori Comfort Pillow",
+      "response": "Feelori Comfort Pillow is a bedding priced at $49.99. Ultra-soft memory foam pillow designed for optimal comfort and support... Key features include: memory foam, support, comfort, soft.",
+      "product_id": 1001
+    },
+    {
+      "query": "What are the features of Feelori Comfort Pillow?",
+      "response": "The Feelori Comfort Pillow features: memory foam, support, comfort, soft",
+      "product_id": 1001
+    },
+    {
+      "query": "How much does Feelori Comfort Pillow cost?",
+      "response": "The Feelori Comfort Pillow is priced at $49.99",
+      "product_id": 1001
+    },
+    {
+      "query": "Tell me about Feelori Aromatherapy Diffuser",
+      "response": "Feelori Aromatherapy Diffuser is a wellness priced at $79.99. Essential oil diffuser with LED lighting and timer settings...",
+      "product_id": 1002
+    },
+    {
+      "query": "What are the features of Feelori Aromatherapy Diffuser?",
+      "response": "The Feelori Aromatherapy Diffuser features: ",
+      "product_id": 1002
+    },
+    {
+      "query": "How much does Feelori Aromatherapy Diffuser cost?",
+      "response": "The Feelori Aromatherapy Diffuser is priced at $79.99",
+      "product_id": 1002
+    }
+  ],
+  "recommendation_scenarios": [
+    {
+      "scenario": "customer looking for better sleep",
+      "keywords": [
+        "sleep",
+        "pillow",
+        "comfort",
+        "rest"
+      ],
+      "recommended_categories": [
+        "Bedding"
+      ],
+      "response_template": "For better sleep, I recommend our {product_name}. It's designed for {features} and costs ${price}."
+    },
+    {
+      "scenario": "customer wants relaxation products",
+      "keywords": [
+        "relax",
+        "stress",
+        "aromatherapy",
+        "wellness"
+      ],
+      "recommended_categories": [
+        "Wellness"
+      ],
+      "response_template": "For relaxation, you might enjoy our {product_name}. It offers {features} and is priced at ${price}."
+    }
+  ],
+  "feature_explanations": {
+    "support": "Provides structural support for proper alignment.",
+    "comfort": "Designed for maximum comfort and user satisfaction.",
+    "memory foam": "Memory foam contours to your body shape, providing personalized support and pressure relief.",
+    "soft": "Gentle and plush texture for comfort."
+  },
+  "created_at": "2025-07-01T11:31:36.400276"
+}

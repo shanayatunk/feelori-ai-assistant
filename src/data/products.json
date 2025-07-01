@@ -1,0 +1,81 @@
+{
+  "products": [
+    {
+      "id": 1001,
+      "title": "Feelori Comfort Pillow",
+      "description": "Ultra-soft memory foam pillow designed for optimal comfort and support. Perfect for side sleepers and back sleepers alike.",
+      "product_type": "Bedding",
+      "vendor": "Feelori",
+      "tags": [
+        "comfort",
+        "memory foam",
+        "pillow",
+        "sleep",
+        "hypoallergenic"
+      ],
+      "handle": "feelori-comfort-pillow",
+      "status": "active",
+      "price": 49.99,
+      "sku": "FCP-001",
+      "inventory_quantity": 50,
+      "weight": 1.0,
+      "weight_unit": "kg",
+      "features": [
+        "memory foam",
+        "support",
+        "comfort",
+        "soft"
+      ],
+      "searchable_text": "feelori comfort pillow ultra-soft memory foam pillow designed for optimal comfort and support. perfect for side sleepers and back sleepers alike. bedding feelori comfort memory foam pillow sleep hypoallergenic memory foam support comfort soft fcp-001",
+      "ai_summary": "Feelori Comfort Pillow is a bedding priced at $49.99. Ultra-soft memory foam pillow designed for optimal comfort and support... Key features include: memory foam, support, comfort, soft."
+    },
+    {
+      "id": 1002,
+      "title": "Feelori Aromatherapy Diffuser",
+      "description": "Essential oil diffuser with LED lighting and timer settings. Create a relaxing atmosphere in any room.",
+      "product_type": "Wellness",
+      "vendor": "Feelori",
+      "tags": [
+        "aromatherapy",
+        "diffuser",
+        "essential oils",
+        "wellness",
+        "LED"
+      ],
+      "handle": "feelori-aromatherapy-diffuser",
+      "status": "active",
+      "price": 79.99,
+      "sku": "FAD-001",
+      "inventory_quantity": 30,
+      "weight": 0.5,
+      "weight_unit": "kg",
+      "features": [],
+      "searchable_text": "feelori aromatherapy diffuser essential oil diffuser with led lighting and timer settings. create a relaxing atmosphere in any room. wellness feelori aromatherapy diffuser essential oils wellness led fad-001",
+      "ai_summary": "Feelori Aromatherapy Diffuser is a wellness priced at $79.99. Essential oil diffuser with LED lighting and timer settings..."
+    }
+  ],
+  "categories": [
+    "Wellness",
+    "Bedding"
+  ],
+  "tags": [
+    "diffuser",
+    "hypoallergenic",
+    "memory foam",
+    "LED",
+    "sleep",
+    "pillow",
+    "wellness",
+    "comfort",
+    "aromatherapy",
+    "essential oils"
+  ],
+  "price_ranges": {},
+  "features": [
+    "support",
+    "comfort",
+    "memory foam",
+    "soft"
+  ],
+  "processed_at": "2025-07-01T11:31:36.399621"
+}

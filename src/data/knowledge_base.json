@@ -1,0 +1,85 @@
+{
+  "product_catalog": {
+    "1001": {
+      "title": "Feelori Comfort Pillow",
+      "summary": "Feelori Comfort Pillow is a bedding priced at $49.99. Ultra-soft memory foam pillow designed for optimal comfort and support... Key features include: memory foam, support, comfort, soft.",
+      "price": 49.99,
+      "category": "Bedding",
+      "features": [
+        "memory foam",
+        "support",
+        "comfort",
+        "soft"
+      ],
+      "tags": [
+        "comfort",
+        "memory foam",
+        "pillow",
+        "sleep",
+        "hypoallergenic"
+      ],
+      "searchable_text": "feelori comfort pillow ultra-soft memory foam pillow designed for optimal comfort and support. perfect for side sleepers and back sleepers alike. bedding feelori comfort memory foam pillow sleep hypoallergenic memory foam support comfort soft fcp-001"
+    },
+    "1002": {
+      "title": "Feelori Aromatherapy Diffuser",
+      "summary": "Feelori Aromatherapy Diffuser is a wellness priced at $79.99. Essential oil diffuser with LED lighting and timer settings...",
+      "price": 79.99,
+      "category": "Wellness",
+      "features": [],
+      "tags": [
+        "aromatherapy",
+        "diffuser",
+        "essential oils",
+        "wellness",
+        "LED"
+      ],
+      "searchable_text": "feelori aromatherapy diffuser essential oil diffuser with led lighting and timer settings. create a relaxing atmosphere in any room. wellness feelori aromatherapy diffuser essential oils wellness led fad-001"
+    }
+  },
+  "categories": [
+    "Wellness",
+    "Bedding"
+  ],
+  "common_features": [
+    "support",
+    "comfort",
+    "memory foam",
+    "soft"
+  ],
+  "price_ranges": {
+    "Bedding": {
+      "min": 49.99,
+      "max": 49.99,
+      "avg": 49.99
+    },
+    "Wellness": {
+      "min": 79.99,
+      "max": 79.99,
+      "avg": 79.99
+    }
+  },
+  "product_recommendations": {
+    "sleep_related": [
+      "1001"
+    ],
+    "wellness_related": [
+      "1002"
+    ],
+    "comfort_related": [
+      "1001"
+    ],
+    "budget_friendly": [
+      "1001"
+    ],
+    "premium": []
+  },
+  "faq_responses": {
+    "shipping_info": "We offer free shipping on orders over $50. Standard shipping takes 3-5 business days, and express shipping takes 1-2 business days.",
+    "return_policy": "We have a 30-day return policy. Items must be in original condition with tags attached. Return shipping is free for defective items.",
+    "product_care": "Care instructions vary by product. Most fabric items are machine washable on gentle cycle. Check individual product pages for specific care instructions.",
+    "warranty": "All products come with a 1-year manufacturer warranty covering defects in materials and workmanship.",
+    "pillow_care": "Pillows should be fluffed daily and washed every 3-6 months. Use a gentle cycle with mild detergent.",
+    "diffuser_usage": "Fill the diffuser with water up to the max line, add 3-5 drops of essential oil, and select your preferred timer setting."
+  },
+  "created_at": "2025-07-01T11:31:36.400116"
+}
