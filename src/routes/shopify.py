@@ -4,7 +4,6 @@ import os
 
 shopify_bp = Blueprint('shopify', __name__)
 
-# Load Shopify credentials from environment
 SHOPIFY_STORE_NAME = os.getenv('SHOPIFY_STORE_NAME')
 SHOPIFY_ADMIN_API_TOKEN = os.getenv('SHOPIFY_ADMIN_API_TOKEN')
 
@@ -14,7 +13,6 @@ def get_shopify_products():
         return jsonify({"error": "Missing Shopify credentials"}), 500
 
     try:
-        # Shopify REST API endpoint
         url = f"https://{SHOPIFY_STORE_NAME}.myshopify.com/admin/api/2023-10/products.json"
 
         headers = {
@@ -27,7 +25,6 @@ def get_shopify_products():
 
         products = response.json().get("products", [])
 
-        # Format for frontend use
         simplified_products = []
         for product in products:
             variant = product.get("variants", [])[0] if product.get("variants") else {}
