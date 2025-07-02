@@ -4,7 +4,8 @@ import os
 
 shopify_bp = Blueprint('shopify', __name__)
 
-SHOPIFY_STORE_NAME = os.getenv('SHOPIFY_STORE_NAME')
+# Load credentials from environment
+SHOPIFY_STORE_NAME = os.getenv('SHOPIFY_STORE_NAME')  # e.g., 'feelori'
 SHOPIFY_ADMIN_API_TOKEN = os.getenv('SHOPIFY_ADMIN_API_TOKEN')
 
 @shopify_bp.route('/shopify/products', methods=['GET'])
@@ -28,12 +29,12 @@ def get_shopify_products():
         simplified_products = []
         for product in products:
             variant = product.get("variants", [])[0] if product.get("variants") else {}
-            image = product.get("image", {})
+            image = product.get("image") or {}  # Safe handling for NoneType
             simplified_products.append({
                 "id": product.get("id"),
                 "title": product.get("title"),
                 "price": variant.get("price", "N/A"),
-                "image": image.get("src", ""),
+                "image": image.get("src", ""),  # Safe even if no image
                 "tags": product.get("tags", "")
             })
 
