@@ -14,8 +14,21 @@ from src.routes.training import training_bp
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
 app.config['SECRET_KEY'] = 'asdf#FGSgvasgf$5$WGT'
 
-# Enable CORS for all routes
-CORS(app)
+# --- START OF FINAL CHANGES ---
+
+# 1. Define all specific URLs that are allowed to make requests.
+#    This now includes your admin dashboard AND your live Shopify store.
+allowed_origins = [
+    "https://feelori-admin-dashboard.onrender.com", # Your admin dashboard
+    "https://feelori.com",                          # Your live website
+    "http://localhost:5173"                         # For local testing
+]
+
+# 2. Configure CORS to only allow requests from these specific origins.
+CORS(app, origins=allowed_origins)
+
+# --- END OF FINAL CHANGES ---
+
 
 app.register_blueprint(user_bp, url_prefix='/api')
 app.register_blueprint(chat_bp, url_prefix='/api')
