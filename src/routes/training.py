@@ -9,7 +9,7 @@ training_bp = Blueprint('training', __name__)
 # Initialize training service
 training_service = ProductTrainingService()
 
-@training_bp.route('/training/process-products', methods=['POST'])
+@training_bp.route('/process-products', methods=['POST'])
 @cross_origin()
 def process_products():
     """Process and train on product data"""
@@ -52,7 +52,7 @@ def process_products():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@training_bp.route('/training/knowledge-base', methods=['GET'])
+@training_bp.route('/knowledge-base', methods=['GET'])
 @cross_origin()
 def get_knowledge_base():
     """Get the current knowledge base"""
@@ -80,7 +80,7 @@ def get_knowledge_base():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@training_bp.route('/training/search', methods=['POST'])
+@training_bp.route('/search', methods=['POST'])
 @cross_origin()
 def search_products():
     """Search products using the trained knowledge base"""
@@ -104,7 +104,7 @@ def search_products():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@training_bp.route('/training/recommendations', methods=['POST'])
+@training_bp.route('/recommendations', methods=['POST'])
 @cross_origin()
 def get_recommendations():
     """Get product recommendations by category"""
@@ -128,7 +128,7 @@ def get_recommendations():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@training_bp.route('/training/status', methods=['GET'])
+@training_bp.route('/status', methods=['GET'])
 @cross_origin()
 def get_training_status():
     """Get training status and statistics"""
@@ -161,7 +161,7 @@ def get_training_status():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@training_bp.route('/training/retrain', methods=['POST'])
+@training_bp.route('/retrain', methods=['POST'])
 @cross_origin()
 def retrain_model():
     """Retrain the model with latest product data"""
