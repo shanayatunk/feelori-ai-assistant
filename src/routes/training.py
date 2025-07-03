@@ -21,7 +21,7 @@ def process_products():
         if not products:
             # Fetch products from Shopify endpoint
             try:
-                response = requests.get('http://localhost:5001/api/shopify/products')
+                response = requests.get('https://feelori-ai-assistant.onrender.com/api/shopify/products')
                 shopify_data = response.json()
                 if shopify_data.get('success'):
                     products = shopify_data.get('products', [])
@@ -167,7 +167,7 @@ def retrain_model():
     """Retrain the model with latest product data"""
     try:
         # Fetch latest products from Shopify
-        response = requests.get('http://localhost:5001/api/shopify/products')
+        response = requests.get('https://feelori-ai-assistant.onrender.com/api/shopify/products')
         shopify_data = response.json()
         
         if not shopify_data.get('success'):
