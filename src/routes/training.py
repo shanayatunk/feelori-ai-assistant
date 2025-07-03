@@ -63,7 +63,7 @@ def get_knowledge_base():
             'products_count': len(knowledge_base.get('product_catalog', {})),
             'categories': knowledge_base.get('categories', []),
             'features_count': len(knowledge_base.get('common_features', [])),
-            'price_ranges': knowledge_bease.get('price_ranges', {}),
+            'price_ranges': knowledge_base.get('price_ranges', {}),
             'created_at': knowledge_base.get('created_at'),
             'faq_topics': list(knowledge_base.get('faq_responses', {}).keys())
         }
