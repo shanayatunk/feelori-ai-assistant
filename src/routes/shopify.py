@@ -11,7 +11,7 @@ SHOPIFY_ADMIN_API_TOKEN = os.getenv('SHOPIFY_ADMIN_API_TOKEN')
 @shopify_bp.route('/shopify/products', methods=['GET'])
 def get_shopify_products():
     if not SHOPIFY_STORE_NAME or not SHOPIFY_ADMIN_API_TOKEN:
-        return jsonify({"error": "Missing Shopify credentials"}), 500
+        return jsonify({"success": False, "error": "Missing Shopify credentials"}), 500
 
     try:
         url = f"https://{SHOPIFY_STORE_NAME}.myshopify.com/admin/api/2023-10/products.json"
@@ -29,16 +29,20 @@ def get_shopify_products():
         simplified_products = []
         for product in products:
             variant = product.get("variants", [])[0] if product.get("variants") else {}
-            image = product.get("image") or {}  # Safe handling for NoneType
+            image = product.get("image") or {}
             simplified_products.append({
                 "id": product.get("id"),
                 "title": product.get("title"),
                 "price": variant.get("price", "N/A"),
-                "image": image.get("src", ""),  # Safe even if no image
+                "image": image.get("src", ""),
                 "tags": product.get("tags", "")
             })
 
-        return jsonify(simplified_products)
+        # ✅ Wrap in expected format
+        return jsonify({
+            "success": True,
+            "products": simplified_products
+        })
 
     except requests.RequestException as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
