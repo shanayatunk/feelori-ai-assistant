@@ -15,7 +15,6 @@ def get_shopify_products():
 
     try:
         url = f"https://{SHOPIFY_STORE_NAME}.myshopify.com/admin/api/2023-10/products.json"
-
         headers = {
             "X-Shopify-Access-Token": SHOPIFY_ADMIN_API_TOKEN,
             "Content-Type": "application/json"
@@ -38,7 +37,7 @@ def get_shopify_products():
                 "tags": product.get("tags", "")
             })
 
-        # ✅ Wrap in expected format
+        # ✅ Final correct response
         return jsonify({
             "success": True,
             "products": simplified_products
@@ -46,3 +45,4 @@ def get_shopify_products():
 
     except requests.RequestException as e:
         return jsonify({"success": False, "error": str(e)}), 500
+
