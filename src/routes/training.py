@@ -1,9 +1,12 @@
+# src/routes/training.py
+
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
 from src.services.product_training import ProductTrainingService
-import requests
-import json
 import os
+
+# Import the function directly instead of using requests
+from src.routes.shopify import fetch_products_from_shopify
 
 training_bp = Blueprint('training', __name__)
 training_service = ProductTrainingService()
@@ -16,18 +19,14 @@ def process_products():
         products = data.get('products', [])
 
         if not products:
-            try:
-                response = requests.get('https://feelori-ai-assistant.onrender.com/api/shopify/products')
-                if response.status_code != 200:
-                    return jsonify({'error': 'Failed to fetch products from Shopify (bad status)'}), 500
-                shopify_data = response.json()
-                if shopify_data.get('success'):
-                    products = shopify_data.get('products', [])
-            except Exception as e:
-                return jsonify({'error': f'Error calling Shopify API: {str(e)}'}), 500
+            # Call the function directly
+            shopify_data = fetch_products_from_shopify()
+            if not shopify_data.get('success'):
+                return jsonify({'error': shopify_data.get('error', 'Failed to fetch products')}), 500
+            products = shopify_data.get('products', [])
 
         if not products:
-            return jsonify({'error': 'No products provided for training'}), 400
+            return jsonify({'error': 'No products found to train on'}), 400
 
         processed_data = training_service.process_product_data(products)
         success = training_service.save_processed_data(processed_data)
@@ -45,7 +44,12 @@ def process_products():
             return jsonify({'error': 'Failed to save processed data'}), 500
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        # It's good practice to log the full error for debugging
+        print(f"An error occurred in process_products: {e}")
+        return jsonify({'error': 'An internal server error occurred.'}), 500
+
+# (The rest of your training.py routes like /knowledge-base, /search, etc. remain the same)
+# ... paste the rest of your original training.py file below this line ...
 
 @training_bp.route('/knowledge-base', methods=['GET'])
 @cross_origin()
@@ -59,7 +63,7 @@ def get_knowledge_base():
             'products_count': len(knowledge_base.get('product_catalog', {})),
             'categories': knowledge_base.get('categories', []),
             'features_count': len(knowledge_base.get('common_features', [])),
-            'price_ranges': knowledge_base.get('price_ranges', {}),
+            'price_ranges': knowledge_bease.get('price_ranges', {}),
             'created_at': knowledge_base.get('created_at'),
             'faq_topics': list(knowledge_base.get('faq_responses', {}).keys())
         }
@@ -144,11 +148,7 @@ def get_training_status():
 @cross_origin()
 def retrain_model():
     try:
-        response = requests.get('https://feelori-ai-assistant.onrender.com/api/shopify/products')
-        if response.status_code != 200:
-            return jsonify({'error': 'Failed to fetch products from Shopify (bad status)'}), 500
-
-        shopify_data = response.json()
+        shopify_data = fetch_products_from_shopify()
         if not shopify_data.get('success'):
             return jsonify({'error': 'Invalid response from Shopify API'}), 500
 
