@@ -46,6 +46,7 @@ class ProductTrainingService:
             if product.get('product_type'):
                 all_categories.add(product.get('product_type'))
         
+        # This creates the complete knowledge base with products AND FAQs
         knowledge_base = {
             'product_catalog': product_catalog,
             'categories': list(all_categories),
@@ -58,7 +59,7 @@ class ProductTrainingService:
         """Creates a dictionary of standard FAQ responses."""
         return {
             "shipping_info": "We offer standard shipping across India, which typically takes 3-5 business days. International shipping is planned for the future!",
-            "return_policy": "We have a 30-day return policy. Items must be in their original condition with tags attached. Return shipping for defective items is covered by us.",
+            "return_policy": "We have a 30-day return policy. Items must be in their original condition with tags attached. Please note that return shipping for defective items is covered by us.",
             "product_care": "For our jewelry, we recommend wiping it with a soft, dry cloth after use and storing it in the provided box. Avoid contact with water and perfume to ensure the 1-gram gold plating lasts for 1-2 years."
         }
 
