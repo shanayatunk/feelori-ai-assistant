@@ -1,19 +1,21 @@
-# src/routes/shopify.py
-
 from flask import Blueprint, jsonify
 import requests
 import os
 
 shopify_bp = Blueprint('shopify', __name__)
 
-# Load credentials from environment
+# Load credentials from environment variables set on Render
 SHOPIFY_STORE_NAME = os.getenv('SHOPIFY_STORE_NAME')
 SHOPIFY_ADMIN_API_TOKEN = os.getenv('SHOPIFY_ADMIN_API_TOKEN')
 
 def fetch_products_from_shopify():
-    """This function fetches products and returns a Python dictionary, not a Flask response."""
+    """
+    This internal function fetches all products from Shopify.
+    It returns a Python dictionary, not a Flask response.
+    """
     if not SHOPIFY_STORE_NAME or not SHOPIFY_ADMIN_API_TOKEN:
-        return {"success": False, "error": "Missing Shopify credentials"}
+        print("Error: Missing Shopify credentials on the server.")
+        return {"success": False, "error": "Missing Shopify credentials on server"}
 
     try:
         url = f"https://{SHOPIFY_STORE_NAME}.myshopify.com/admin/api/2023-10/products.json"
@@ -21,31 +23,22 @@ def fetch_products_from_shopify():
             "X-Shopify-Access-Token": SHOPIFY_ADMIN_API_TOKEN,
             "Content-Type": "application/json"
         }
-
         response = requests.get(url, headers=headers)
-        response.raise_for_status() # Raises an exception for bad status codes
+        response.raise_for_status()  # This will raise an exception for bad status codes (like 401, 403, 500)
 
         products = response.json().get("products", [])
-        simplified_products = []
-        for product in products:
-            variant = product.get("variants", [])[0] if product.get("variants") else {}
-            image = product.get("image") or {}
-            simplified_products.append({
-                "id": product.get("id"),
-                "title": product.get("title"),
-                "price": variant.get("price", "N/A"),
-                "image": image.get("src", ""),
-                "tags": product.get("tags", "")
-            })
-        
-        return {"success": True, "products": simplified_products}
+        return {"success": True, "products": products}
 
     except requests.RequestException as e:
-        return {"success": False, "error": str(e)}
+        print(f"Error fetching from Shopify: {e}")
+        return {"success": False, "error": f"Failed to fetch from Shopify: {str(e)}"}
 
 @shopify_bp.route('/shopify/products', methods=['GET'])
 def get_shopify_products_route():
-    """This is the API route that calls the function and returns a JSON response."""
+    """
+    This is the public API route that your frontend can call.
+    It calls the internal function and returns a proper JSON response.
+    """
     result = fetch_products_from_shopify()
     if not result.get('success'):
         return jsonify(result), 500

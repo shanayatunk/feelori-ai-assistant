@@ -1,61 +1,78 @@
-# src/routes/training.py - A complete test version
-
-from flask import Blueprint, jsonify
+from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
+from src.services.product_training import ProductTrainingService
+import os
 import time
 
+# Import the internal function directly instead of using requests
+from src.routes.shopify import fetch_products_from_shopify
+
 training_bp = Blueprint('training', __name__)
-
-@training_bp.route('/training/status', methods=['GET'])
-@cross_origin()
-def get_training_status_test():
-    """A working test route for the initial status check."""
-    print("TEST: /api/training/status endpoint was hit!")
-    return jsonify({
-        'success': True, 
-        'training_status': {
-            'is_trained': False,
-            'files_status': {},
-            'products_count': 0
-        }
-    })
-
-@training_bp.route('/training/knowledge-base', methods=['GET'])
-@cross_origin()
-def get_knowledge_base_test():
-    """A working test route for the initial knowledge base check."""
-    print("TEST: /api/training/knowledge-base endpoint was hit!")
-    return jsonify({
-        'success': True, 
-        'knowledge_base_summary': {
-            'products_count': 0,
-            'features_count': 0,
-            'categories': [],
-            'faq_topics': [],
-            'created_at': time.time()
-        }
-    })
+training_service = ProductTrainingService()
 
 @training_bp.route('/training/process-products', methods=['POST'])
 @cross_origin()
-def process_products_test():
-    """A working test route for the 'Process Products' button."""
-    print("TEST: /api/training/process-products endpoint was successfully hit!")
-    # Immediately return a success message
-    return jsonify({
-        'success': True,
-        'message': 'TEST successful: Backend received the request.',
-        'processed_count': 123, # Sending back dummy data
-        'categories': ['Test Category']
-    })
+def process_products():
+    """Handles the 'Process Products' button click from the admin dashboard."""
+    try:
+        # Call the internal function directly to get products
+        shopify_data = fetch_products_from_shopify()
+        
+        if not shopify_data.get('success'):
+            return jsonify({'error': shopify_data.get('error', 'Failed to fetch products from Shopify')}), 500
+        
+        products = shopify_data.get('products', [])
+        if not products:
+            return jsonify({'error': 'No products were found in your Shopify store to train on.'}), 400
 
-# Add placeholder routes for other functions your dashboard might call
-@training_bp.route('/training/retrain', methods=['POST'])
-@cross_origin()
-def retrain_model_test():
-    return jsonify({'success': True, 'message': 'Retrain test successful.'})
+        # Process and save the data
+        processed_data = training_service.process_product_data(products)
+        training_service.save_processed_data(processed_data)
 
-@training_bp.route('/training/search', methods=['POST'])
+        return jsonify({
+            'success': True,
+            'message': f'Successfully processed {len(products)} products.',
+            'processed_count': len(processed_data.get('products', [])),
+            'categories': processed_data.get('categories', [])
+        })
+
+    except Exception as e:
+        print(f"Error in /training/process-products: {str(e)}")
+        return jsonify({'error': 'An unexpected internal error occurred during training.'}), 500
+
+# --- Full working versions of the other dashboard routes ---
+
+@training_bp.route('/training/status', methods=['GET'])
 @cross_origin()
-def search_products_test():
-    return jsonify({'success': True, 'message': 'Search test successful.'})
+def get_training_status():
+    """A working route for the initial status check."""
+    files_status = {
+        'products_file': os.path.exists(training_service.products_file),
+        'knowledge_base_file': os.path.exists(training_service.knowledge_base_file),
+    }
+    knowledge_base = training_service.load_knowledge_base()
+    status = {
+        'is_trained': all(files_status.values()),
+        'files_status': files_status,
+        'products_count': len(knowledge_base.get('product_catalog', {})) if knowledge_base else 0,
+    }
+    return jsonify({'success': True, 'training_status': status})
+
+@training_bp.route('/training/knowledge-base', methods=['GET'])
+@cross_origin()
+def get_knowledge_base():
+    """A working route for the initial knowledge base check."""
+    knowledge_base = training_service.load_knowledge_base()
+    if not knowledge_base:
+        return jsonify({'success': True, 'knowledge_base_summary': {
+            'products_count': 0, 'features_count': 0, 'categories': [], 'faq_topics': [], 'created_at': None
+        }})
+
+    summary = {
+        'products_count': len(knowledge_base.get('product_catalog', {})),
+        'features_count': len(knowledge_base.get('common_features', [])),
+        'categories': knowledge_base.get('categories', []),
+        'faq_topics': list(knowledge_base.get('faq_responses', {}).keys()),
+        'created_at': knowledge_base.get('created_at')
+    }
+    return jsonify({'success': True, 'knowledge_base_summary': summary})
