@@ -1,83 +1,61 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
-from src.services.product_training import ProductTrainingService
 import os
-
-# Import the internal function directly instead of using requests
+# Import the shared service instance
+from src.services import training_service
 from src.routes.shopify import fetch_products_from_shopify
 
 training_bp = Blueprint('training', __name__)
-training_service = ProductTrainingService()
 
 @training_bp.route('/training/process-products', methods=['POST'])
 @cross_origin()
 def process_products():
-    """Handles the 'Process Products' button click from the admin dashboard."""
+    # ... Your process_products function code remains the same ...
+    # It will now use the shared `training_service` instance.
     try:
-        # Call the internal function directly to get products
         shopify_data = fetch_products_from_shopify()
-        
         if not shopify_data.get('success'):
-            return jsonify({'error': shopify_data.get('error', 'Failed to fetch products from Shopify')}), 500
+            return jsonify({'error': shopify_data.get('error', 'Failed to fetch products')}), 500
         
         products = shopify_data.get('products', [])
         if not products:
-            return jsonify({'error': 'No products were found in your Shopify store to train on.'}), 400
+            return jsonify({'error': 'No products found to train on.'}), 400
 
-        # Process and save the data
         processed_data = training_service.process_product_data(products)
         training_service.save_processed_data(processed_data)
 
+        # Let's return the full processed data for better feedback
         return jsonify({
             'success': True,
             'message': f'Successfully processed {len(products)} products.',
-            'processed_count': len(processed_data.get('products', [])),
-            'categories': processed_data.get('categories', [])
+            'data': processed_data
         })
-
     except Exception as e:
-        print(f"Error in /training/process-products: {str(e)}")
-        return jsonify({'error': 'An unexpected internal error occurred during training.'}), 500
+        print(f"Error in /process-products: {str(e)}")
+        return jsonify({'error': 'An internal server error occurred.'}), 500
 
+# ... (paste the rest of your original training.py routes here) ...
 @training_bp.route('/training/status', methods=['GET'])
 @cross_origin()
 def get_training_status():
-    """Returns the current status of the training data and knowledge base."""
-    try:
-        files_status = {
-            'products_file': os.path.exists(training_service.products_file),
-            'knowledge_base_file': os.path.exists(training_service.knowledge_base_file),
-        }
-        knowledge_base = training_service.load_knowledge_base()
-        status = {
-            'is_trained': all(files_status.values()),
-            'files_status': files_status,
-            'products_count': len(knowledge_base.get('product_catalog', {})) if knowledge_base else 0,
-        }
-        return jsonify({'success': True, 'training_status': status})
-    except Exception as e:
-        print(f"Error in /training/status: {str(e)}")
-        return jsonify({'error': 'Could not retrieve training status.'}), 500
-        
+    knowledge_base = training_service.get_knowledge_base()
+    status = {
+        'is_trained': bool(knowledge_base),
+        'products_count': len(knowledge_base.get('product_catalog', {})) if knowledge_base else 0,
+    }
+    return jsonify({'success': True, 'training_status': status})
+
 @training_bp.route('/training/knowledge-base', methods=['GET'])
 @cross_origin()
 def get_knowledge_base():
-    """Returns a summary of the current knowledge base."""
-    try:
-        knowledge_base = training_service.load_knowledge_base()
-        if not knowledge_base:
-            return jsonify({'success': True, 'knowledge_base_summary': {
-                'products_count': 0, 'features_count': 0, 'categories': [], 'faq_topics': [], 'created_at': None
-            }})
+    knowledge_base = training_service.get_knowledge_base()
+    if not knowledge_base:
+        return jsonify({'success': True, 'knowledge_base_summary': {}})
 
-        summary = {
-            'products_count': len(knowledge_base.get('product_catalog', {})),
-            'features_count': len(knowledge_base.get('common_features', [])),
-            'categories': knowledge_base.get('categories', []),
-            'faq_topics': list(knowledge_base.get('faq_responses', {}).keys()),
-            'created_at': knowledge_base.get('created_at')
-        }
-        return jsonify({'success': True, 'knowledge_base_summary': summary})
-    except Exception as e:
-        print(f"Error in /training/knowledge-base: {str(e)}")
-        return jsonify({'error': 'Could not retrieve knowledge base summary.'}), 500
+    summary = {
+        'products_count': len(knowledge_base.get('product_catalog', {})),
+        'categories': knowledge_base.get('categories', []),
+        'faq_topics': list(knowledge_base.get('faq_responses', {}).keys()),
+        'created_at': knowledge_base.get('created_at')
+    }
+    return jsonify({'success': True, 'knowledge_base_summary': summary})

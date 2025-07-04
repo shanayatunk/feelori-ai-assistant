@@ -1,4 +1,3 @@
-# src/services/product_training.py
 import json
 import os
 import re
@@ -10,23 +9,24 @@ class ProductTrainingService:
         self.data_dir = data_dir or os.path.join(os.path.dirname(__file__), '..', 'data')
         self.knowledge_base_file = os.path.join(self.data_dir, 'knowledge_base.json')
         os.makedirs(self.data_dir, exist_ok=True)
+        # Load the knowledge base into memory when the service starts
+        self.knowledge_base = self._load_from_file()
 
-    def load_knowledge_base(self):
-        if os.path.exists(self.knowledge_base_file):
-            with open(self.knowledge_base_file, 'r') as f:
-                return json.load(f)
-        return None
+    def _load_from_file(self):
+        """Loads the knowledge base from the file system."""
+        try:
+            if os.path.exists(self.knowledge_base_file):
+                with open(self.knowledge_base_file, 'r') as f:
+                    print("Knowledge base file found, loading into memory.")
+                    return json.load(f)
+        except Exception as e:
+            print(f"Error loading knowledge base from file: {e}")
+        print("No existing knowledge base file found.")
+        return {}
 
-    def _clean_html(self, html_text: str) -> str:
-        if not html_text:
-            return ""
-        clean_text = re.sub(r'<[^>]+>', '', html_text)
-        return re.sub(r'\s+', ' ', clean_text).strip()
-
-    def _parse_tags(self, tags_string: str) -> List[str]:
-        if not tags_string:
-            return []
-        return [tag.strip() for tag in tags_string.split(',') if tag.strip()]
+    def get_knowledge_base(self):
+        """Returns the knowledge base currently held in memory."""
+        return self.knowledge_base
 
     def process_product_data(self, products: List[Dict[str, Any]]) -> Dict[str, Any]:
         product_catalog = {}
@@ -46,7 +46,6 @@ class ProductTrainingService:
             if product.get('product_type'):
                 all_categories.add(product.get('product_type'))
         
-        # This creates the complete knowledge base with products AND FAQs
         knowledge_base = {
             'product_catalog': product_catalog,
             'categories': list(all_categories),
@@ -60,16 +59,27 @@ class ProductTrainingService:
         return {
             "shipping_info": "We offer standard shipping across India, which typically takes 3-5 business days. International shipping is planned for the future!",
             "return_policy": "We have a 30-day return policy. Items must be in their original condition with tags attached. Please note that return shipping for defective items is covered by us.",
-            "product_care": "For our jewelry, we recommend wiping it with a soft, dry cloth after use and storing it in the provided box. Avoid contact with water and perfume to ensure the 1-gram gold plating lasts for 1-2 years."
+            "product_care": "For our jewelry, we recommend wiping it with a soft, dry cloth after use and storing it in the provided box. Avoid contact with water and perfume."
         }
 
     def save_processed_data(self, data: Dict[str, Any]) -> bool:
-        """Saves the complete knowledge base to a file."""
+        """Saves the knowledge base to a file AND updates it in memory."""
         try:
             with open(self.knowledge_base_file, 'w') as f:
                 json.dump(data, f, indent=4)
-            print(f"Knowledge base saved successfully with {len(data.get('product_catalog', {}))} products.")
+            # Update the in-memory version
+            self.knowledge_base = data
+            print(f"Knowledge base saved to file and updated in memory.")
             return True
         except Exception as e:
             print(f"Error saving knowledge base: {e}")
             return False
+            
+    def _clean_html(self, html_text: str) -> str:
+        if not html_text: return ""
+        clean_text = re.sub(r'<[^>]+>', '', html_text)
+        return re.sub(r'\s+', ' ', clean_text).strip()
+
+    def _parse_tags(self, tags_string: str) -> List[str]:
+        if not tags_string: return []
+        return [tag.strip() for tag in tags_string.split(',') if tag.strip()]
