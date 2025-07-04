@@ -2,7 +2,6 @@ from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
 from src.services.product_training import ProductTrainingService
 import os
-import time
 
 # Import the internal function directly instead of using requests
 from src.routes.shopify import fetch_products_from_shopify
@@ -40,39 +39,45 @@ def process_products():
         print(f"Error in /training/process-products: {str(e)}")
         return jsonify({'error': 'An unexpected internal error occurred during training.'}), 500
 
-# --- Full working versions of the other dashboard routes ---
-
 @training_bp.route('/training/status', methods=['GET'])
 @cross_origin()
 def get_training_status():
-    """A working route for the initial status check."""
-    files_status = {
-        'products_file': os.path.exists(training_service.products_file),
-        'knowledge_base_file': os.path.exists(training_service.knowledge_base_file),
-    }
-    knowledge_base = training_service.load_knowledge_base()
-    status = {
-        'is_trained': all(files_status.values()),
-        'files_status': files_status,
-        'products_count': len(knowledge_base.get('product_catalog', {})) if knowledge_base else 0,
-    }
-    return jsonify({'success': True, 'training_status': status})
-
+    """Returns the current status of the training data and knowledge base."""
+    try:
+        files_status = {
+            'products_file': os.path.exists(training_service.products_file),
+            'knowledge_base_file': os.path.exists(training_service.knowledge_base_file),
+        }
+        knowledge_base = training_service.load_knowledge_base()
+        status = {
+            'is_trained': all(files_status.values()),
+            'files_status': files_status,
+            'products_count': len(knowledge_base.get('product_catalog', {})) if knowledge_base else 0,
+        }
+        return jsonify({'success': True, 'training_status': status})
+    except Exception as e:
+        print(f"Error in /training/status: {str(e)}")
+        return jsonify({'error': 'Could not retrieve training status.'}), 500
+        
 @training_bp.route('/training/knowledge-base', methods=['GET'])
 @cross_origin()
 def get_knowledge_base():
-    """A working route for the initial knowledge base check."""
-    knowledge_base = training_service.load_knowledge_base()
-    if not knowledge_base:
-        return jsonify({'success': True, 'knowledge_base_summary': {
-            'products_count': 0, 'features_count': 0, 'categories': [], 'faq_topics': [], 'created_at': None
-        }})
+    """Returns a summary of the current knowledge base."""
+    try:
+        knowledge_base = training_service.load_knowledge_base()
+        if not knowledge_base:
+            return jsonify({'success': True, 'knowledge_base_summary': {
+                'products_count': 0, 'features_count': 0, 'categories': [], 'faq_topics': [], 'created_at': None
+            }})
 
-    summary = {
-        'products_count': len(knowledge_base.get('product_catalog', {})),
-        'features_count': len(knowledge_base.get('common_features', [])),
-        'categories': knowledge_base.get('categories', []),
-        'faq_topics': list(knowledge_base.get('faq_responses', {}).keys()),
-        'created_at': knowledge_base.get('created_at')
-    }
-    return jsonify({'success': True, 'knowledge_base_summary': summary})
+        summary = {
+            'products_count': len(knowledge_base.get('product_catalog', {})),
+            'features_count': len(knowledge_base.get('common_features', [])),
+            'categories': knowledge_base.get('categories', []),
+            'faq_topics': list(knowledge_base.get('faq_responses', {}).keys()),
+            'created_at': knowledge_base.get('created_at')
+        }
+        return jsonify({'success': True, 'knowledge_base_summary': summary})
+    except Exception as e:
+        print(f"Error in /training/knowledge-base: {str(e)}")
+        return jsonify({'error': 'Could not retrieve knowledge base summary.'}), 500

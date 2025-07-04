@@ -5,8 +5,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from flask import Flask
 from flask_cors import CORS
-# from src.models.user import db  # --- Temporarily disabled for stability
-# from src.routes.user import user_bp # --- Temporarily disabled for stability
+from src.models.user import db
+from src.routes.user import user_bp
 from src.routes.chat import chat_bp
 from src.routes.shopify import shopify_bp
 from src.routes.training import training_bp
@@ -25,25 +25,23 @@ allowed_origins = [
 CORS(app, origins=allowed_origins)
 # --- END OF CORS CONFIGURATION ---
 
-# Register the necessary blueprints
-# app.register_blueprint(user_bp, url_prefix='/api') # --- Temporarily disabled
+# Re-enable all your blueprints
+app.register_blueprint(user_bp, url_prefix='/api')
 app.register_blueprint(chat_bp, url_prefix='/api')
 app.register_blueprint(shopify_bp, url_prefix='/api')
 app.register_blueprint(training_bp, url_prefix='/api')
 
-# --- All database code is disabled to prevent crashes ---
-# app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(os.path.dirname(__file__), 'database', 'app.db')}"
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# db.init_app(app)
-# with app.app_context():
-#     db.create_all()
+# Re-enable the database
+app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(os.path.dirname(__file__), 'database', 'app.db')}"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db.init_app(app)
+with app.app_context():
+    db.create_all()
 
 @app.route('/')
 def health_check():
     """A simple route for Render's health checks."""
-    return "Backend is running!"
-
-# The static file serving route is removed as it's not needed for the API backend.
+    return "Backend is running with full logic!"
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)

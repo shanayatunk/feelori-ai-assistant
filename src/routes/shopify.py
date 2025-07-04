@@ -24,7 +24,7 @@ def fetch_products_from_shopify():
             "Content-Type": "application/json"
         }
         response = requests.get(url, headers=headers)
-        response.raise_for_status()  # This will raise an exception for bad status codes (like 401, 403, 500)
+        response.raise_for_status()  # Raises an exception for bad status codes
 
         products = response.json().get("products", [])
         return {"success": True, "products": products}
@@ -36,8 +36,7 @@ def fetch_products_from_shopify():
 @shopify_bp.route('/shopify/products', methods=['GET'])
 def get_shopify_products_route():
     """
-    This is the public API route that your frontend can call.
-    It calls the internal function and returns a proper JSON response.
+    This is the public API route that returns products as a JSON response.
     """
     result = fetch_products_from_shopify()
     if not result.get('success'):
