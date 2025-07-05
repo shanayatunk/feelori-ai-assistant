@@ -1,5 +1,5 @@
+# src/services/__init__.py
 from .product_training import ProductTrainingService
 
-# Create a single, shared instance of the training service
-# that the entire application will use.
+# This creates one shared instance of the service for the whole app.
 training_service = ProductTrainingService()

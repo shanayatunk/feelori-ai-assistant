@@ -1,7 +1,6 @@
+# src/routes/training.py
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
-import os
-# Import the shared service instance
 from src.services import training_service
 from src.routes.shopify import fetch_products_from_shopify
 
@@ -10,8 +9,6 @@ training_bp = Blueprint('training', __name__)
 @training_bp.route('/training/process-products', methods=['POST'])
 @cross_origin()
 def process_products():
-    # ... Your process_products function code remains the same ...
-    # It will now use the shared `training_service` instance.
     try:
         shopify_data = fetch_products_from_shopify()
         if not shopify_data.get('success'):
@@ -24,7 +21,6 @@ def process_products():
         processed_data = training_service.process_product_data(products)
         training_service.save_processed_data(processed_data)
 
-        # Let's return the full processed data for better feedback
         return jsonify({
             'success': True,
             'message': f'Successfully processed {len(products)} products.',
@@ -34,15 +30,11 @@ def process_products():
         print(f"Error in /process-products: {str(e)}")
         return jsonify({'error': 'An internal server error occurred.'}), 500
 
-# ... (paste the rest of your original training.py routes here) ...
 @training_bp.route('/training/status', methods=['GET'])
 @cross_origin()
 def get_training_status():
     knowledge_base = training_service.get_knowledge_base()
-    status = {
-        'is_trained': bool(knowledge_base),
-        'products_count': len(knowledge_base.get('product_catalog', {})) if knowledge_base else 0,
-    }
+    status = {'is_trained': bool(knowledge_base), 'products_count': len(knowledge_base.get('product_catalog', {}))}
     return jsonify({'success': True, 'training_status': status})
 
 @training_bp.route('/training/knowledge-base', methods=['GET'])
@@ -51,7 +43,6 @@ def get_knowledge_base():
     knowledge_base = training_service.get_knowledge_base()
     if not knowledge_base:
         return jsonify({'success': True, 'knowledge_base_summary': {}})
-
     summary = {
         'products_count': len(knowledge_base.get('product_catalog', {})),
         'categories': knowledge_base.get('categories', []),
